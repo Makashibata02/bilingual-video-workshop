@@ -1,0 +1,7 @@
+{
+  "width": 1280,
+  "height": 720,
+  "duration": 12,
+  "pages": [{"id": "example", "blocks": [{"id": "heading", "text": "Signal and noise", "translation": "信号与噪声", "enabled": true}]}],
+  "intervals": [{"start": 0, "end": 12, "page": "example"}]
+}

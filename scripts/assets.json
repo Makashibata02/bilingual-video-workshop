@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "whisper_revision": "ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66",
+  "files": [
+    {
+      "group": "asr",
+      "path": "models/base/config.json",
+      "url": "https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/config.json",
+      "sha256": "56a6d8110d311f19c8f0471e562832c7527f146b567275bfca59fcf7c184da9a",
+      "bytes": 2309
+    },
+    {
+      "group": "asr",
+      "path": "models/base/model.bin",
+      "url": "https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/model.bin",
+      "sha256": "d01c3014881c9c6f3133c182f3d2887eb6ca1c789a7538c5c007196857a0a6a9",
+      "bytes": 145217532
+    },
+    {
+      "group": "asr",
+      "path": "models/base/tokenizer.json",
+      "url": "https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/tokenizer.json",
+      "sha256": "fb7b63191e9bb045082c79fd742a3106a12c99513ab30df4a0d47fa6cb6fd0ab",
+      "bytes": 2203239
+    },
+    {
+      "group": "asr",
+      "path": "models/base/vocabulary.txt",
+      "url": "https://huggingface.co/Systran/faster-whisper-base/resolve/ebe41f70d5b6dfa9166e2c581c45c9c0cfc57b66/vocabulary.txt",
+      "sha256": "34ce3fe1c5041027b3f8d42912270993f986dbc4bb34cf27f951e34a1e453913",
+      "bytes": 459861
+    },
+    {
+      "group": "argos",
+      "path": "models/argos/translate-en_zh-1_9/metadata.json",
+      "archive_member": "translate-en_zh-1_9/metadata.json",
+      "sha256": "106086bc1b77d2d5c298aa38be69e8e87263eeb4167b4614b08a030c43d31b6a",
+      "bytes": 135
+    },
+    {
+      "group": "argos",
+      "path": "models/argos/translate-en_zh-1_9/README.md",
+      "archive_member": "translate-en_zh-1_9/README.md",
+      "sha256": "050e546664f0e70d80b6f83aa1da5f04ee85335f4a1b62d1c89184f76100b5dc",
+      "bytes": 401
+    },
+    {
+      "group": "argos",
+      "path": "models/argos/translate-en_zh-1_9/sentencepiece.model",
+      "archive_member": "translate-en_zh-1_9/sentencepiece.model",
+      "sha256": "872224b85a11edc9d769a94949fd387b67ea85b50708db9f91f32f5b497a9af3",
+      "bytes": 806370
+    },
+    {
+      "group": "argos",
+      "path": "models/argos/translate-en_zh-1_9/model/config.json",
+      "archive_member": "translate-en_zh-1_9/model/config.json",
+      "sha256": "3a8660f12559a223969532ff191e5e6f50d4ff24164517edbd6a5090dc5144c6",
+      "bytes": 216
+    },
+    {
+      "group": "argos",
+      "path": "models/argos/translate-en_zh-1_9/model/model.bin",
+      "archive_member": "translate-en_zh-1_9/model/model.bin",
+      "sha256": "1a039114d9456b6528fabb65b455b6f156319634a0f984b1f6018f7737d67598",
+      "bytes": 82713318
+    },
+    {
+      "group": "argos",
+      "path": "models/argos/translate-en_zh-1_9/model/shared_vocabulary.json",
+      "archive_member": "translate-en_zh-1_9/model/shared_vocabulary.json",
+      "sha256": "c0b6e24705ec0489d5b810de365959c1013aecd644cfeca161b54ea1df6a7dc0",
+      "bytes": 1367577
+    },
+    {
+      "group": "ocr",
+      "path": "models/ocr/en_PP-OCRv3_rec_infer.onnx",
+      "url": "https://huggingface.co/spaces/RapidAI/RapidOCR/resolve/ad05aa73dc29dbf3d2a4f3d8af303244cdf91634/models/text_rec/en_PP-OCRv3_rec_infer.onnx",
+      "sha256": "ef7abd8bd3629ae57ea2c28b425c1bd258a871b93fd2fe7c433946ade9b5d9ea",
+      "bytes": 8967018
+    },
+    {
+      "group": "asr-small",
+      "path": "models/small/config.json",
+      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/config.json",
+      "sha256": "b55496ac7940a7ae47d2c01eab40edfd8701feec1229d9cce3b40014383fb828",
+      "bytes": 2370
+    },
+    {
+      "group": "asr-small",
+      "path": "models/small/model.bin",
+      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/model.bin",
+      "sha256": "3e305921506d8872816023e4c273e75d2419fb89b24da97b4fe7bce14170d671",
+      "bytes": 483546902
+    },
+    {
+      "group": "asr-small",
+      "path": "models/small/tokenizer.json",
+      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/tokenizer.json",
+      "sha256": "fb7b63191e9bb045082c79fd742a3106a12c99513ab30df4a0d47fa6cb6fd0ab",
+      "bytes": 2203239
+    },
+    {
+      "group": "asr-small",
+      "path": "models/small/vocabulary.txt",
+      "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/536b0662742c02347bc0e980a01041f333bce120/vocabulary.txt",
+      "sha256": "34ce3fe1c5041027b3f8d42912270993f986dbc4bb34cf27f951e34a1e453913",
+      "bytes": 459861
+    }
+  ],
+  "argos_archive": "https://argos-net.com/v1/translate-en_zh-1_9.argosmodel",
+  "small_revision": "536b0662742c02347bc0e980a01041f333bce120"
+}

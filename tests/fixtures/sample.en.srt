@@ -1,0 +1,7 @@
+1
+00:00:00,000 --> 00:00:05,000
+The signal is clear when the noise is weak.
+
+2
+00:00:05,000 --> 00:00:12,000
+Compare the measurements before drawing a conclusion.

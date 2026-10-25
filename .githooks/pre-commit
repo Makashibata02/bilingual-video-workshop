@@ -1,0 +1,3 @@
+#!/bin/sh
+set -eu
+python scripts/check_public.py --staged --gitleaks

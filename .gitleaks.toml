@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exact, deliberately invalid test fixtures only"
+regexTarget = "secret"
+regexes = [
+  '''^(fake|fake-key|fake-secret|first-fake-secret|second-fake-secret|second-key|sensitive-test-key-never-write)$'''
+]
