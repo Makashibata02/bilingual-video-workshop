@@ -24,6 +24,22 @@ class PublicationTests(unittest.TestCase):
             self.assertFalse(private_path(name),name)
             self.assertTrue((ROOT/name).is_file(),name)
 
+    def test_portable_audit_rejects_local_data_and_private_build_markers(self):
+        from audit_portable import audit
+        base=ROOT/'.local/test-tmp/portable-audit';base.mkdir(parents=True,exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=base) as temp:
+            folder=Path(temp)
+            for name in ['BilingualVideo.exe','engine-worker.exe','bin/ffmpeg.exe','bin/node.exe','LICENSE','THIRD-PARTY-NOTICES.md','BUILD-INFO.json']:
+                path=folder/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('fixture',encoding='utf-8')
+            (folder/'app').mkdir();(folder/'app/assets.json').write_text('{"files":[]}',encoding='utf-8')
+            (folder/'licenses').mkdir();(folder/'licenses/index.json').write_text('{"packages":[]}',encoding='utf-8')
+            self.assertTrue(audit(folder)['passed'])
+            (folder/'settings').mkdir();(folder/'settings/profiles.json').write_text('{}',encoding='utf-8')
+            (folder/'app/example.py').write_text('private-build-marker',encoding='utf-8')
+            result=audit(folder,['private-build-marker'])
+            rules={item['rule'] for item in result['findings']}
+            self.assertIn('private_or_debug_artifact',rules);self.assertIn('private_build_path',rules)
+
     @unittest.skipUnless(shutil.which('git'),'Git is needed to exercise the commit guard')
     def test_staged_guard_handles_crlf_and_rejects_unreviewed_and_private_files(self):
         base=ROOT/'.local/test-tmp/publication';base.mkdir(parents=True,exist_ok=True)

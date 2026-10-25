@@ -4,11 +4,18 @@ import math,re,os
 
 
 
+def bundled_font_folder():
+    from paths import app_root
+    return app_root()/'fonts'
+
+
 def font_at(size):
     from PIL import ImageFont
     for name in ('msyh.ttc','msyhbd.ttc','simhei.ttf'):
         p=Path(os.environ.get('WINDIR',r'C:\Windows'))/'Fonts'/name
         if p.is_file():return ImageFont.truetype(str(p),size)
+    fallback=bundled_font_folder()/'NotoSansCJKsc-Regular.otf'
+    if fallback.is_file():return ImageFont.truetype(str(fallback),size)
     raise RuntimeError('未找到可用于中文排版的系统字体。请安装微软雅黑或黑体后重试。')
 
 
@@ -23,8 +30,8 @@ def japanese_font(text):
     folder=Path(os.environ.get('WINDIR',r'C:\Windows'))/'Fonts'
     candidates=['YuGothM.ttc','YuGothR.ttc','meiryo.ttc','msgothic.ttc','msyh.ttc','simhei.ttf',
                 'NotoSansCJK-Regular.ttc','NotoSansJP-Regular.ttf']
-    for name in candidates:
-        path=folder/name
+    paths=[folder/name for name in candidates]+[bundled_font_folder()/name for name in ('NotoSansCJKjp-Regular.otf','NotoSansCJKsc-Regular.otf')]
+    for path in paths:
         if not path.is_file():continue
         try:
             with TTFont(path,fontNumber=0,lazy=True) as font:
@@ -57,6 +64,8 @@ def wrap(text,size,width,font_path=None):
 
 def ass_header(width,height,font):
     if any(c in font for c in ',\r\n'):raise ValueError('字体名称包含不支持的字符。')
+    if font=='Microsoft YaHei' and not (Path(os.environ.get('WINDIR',r'C:\Windows'))/'Fonts/msyh.ttc').is_file():
+        font=font_at(20).getname()[0]
     return ['[Script Info]','ScriptType: v4.00+',f'PlayResX: {width}',f'PlayResY: {height}','WrapStyle: 2','ScaledBorderAndShadow: yes','',
       '[V4+ Styles]','Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding',
       f'Style: Bilingual,{font},34,&H00FFFFFF,&H00FFFFFF,&H00141414,&H00000000,0,0,0,0,100,100,0,0,1,0.5,0,8,0,0,0,1',
@@ -172,7 +181,8 @@ def presentation(path,cues,translations,data,folder,font='Microsoft YaHei'):
     # Preserve every pixel's position and the complete original framing.
     # No crop, zoom, split-screen inset, or video scaling is applied.
     script=Path(folder).parent/'layout-filter.txt'
-    script.write_text(f'[0:v]pad={width}:{height}:{rail}:0:color=0x1B2534,setsar=1,ass=filename=bilingual.ass[vout]',encoding='utf-8')
+    font_option=':fontsdir=fonts' if (Path(path).parent/'fonts').is_dir() else ''
+    script.write_text(f'[0:v]pad={width}:{height}:{rail}:0:color=0x1B2534,setsar=1,ass=filename=bilingual.ass{font_option}[vout]',encoding='utf-8')
     result={'canvas_width':width,'canvas_height':height,'rail_side':'left','rail_width':rail,'main_height':main_h,
             'original_frame_rect':[rail,0,original_w,original_h],'original_frame_scale':1.0,
             'page_count':len(data['pages']),'text_blocks':sum(len(p['blocks']) for p in data['pages']),

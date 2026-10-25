@@ -1,143 +1,102 @@
 # 双语视频工坊 · BilingualVideo
 
-Windows 本地英中 / 日中双语字幕工具：先导入视频、选择片段和设置，再开始识别、翻译、排版与导出。当前功能版本为 **1.9.4**。
+把英语、日语视频制作成中文字幕、双语字幕和带字幕成片。**导入后先设置，点击开始才处理。**
 
-本次开源准备提供源码，暂不附公开的 Windows 安装包、模型或真实视频。源码使用 GNU GPL v3，改编来源和依赖说明见 [NOTICE.md](NOTICE.md)。
+[下载 Windows 便携版](https://github.com/Makashibata02/bilingual-video-workshop/releases/latest) · [动漫模式](docs/ANIME.md) · [更新记录](CHANGELOG.md) · [问题反馈](https://github.com/Makashibata02/bilingual-video-workshop/issues)
 
-已打包的 Windows 便携版直接双击 `BilingualVideo.exe`；下面的环境安装、构建和源码导出命令面向源码仓库，便携版无需安装 Python。
+![Windows x64](https://img.shields.io/badge/Windows-10%2F11%20x64-0078D6)
+![GPL v3](https://img.shields.io/badge/License-GPLv3-blue)
+![Checks](https://github.com/Makashibata02/bilingual-video-workshop/actions/workflows/ci.yml/badge.svg)
 
-## 功能
+## 下载和开始使用
 
-- 本地文件和文件夹队列；同名英文 SRT 优先，缺少字幕时使用本地 faster-whisper。
-- 必应免费在线翻译、Google 可选接口、Argos 离线备用，以及兼容 Chat Completions 的自定义 API。
-- 命名保存多套 API 地址、模型和密钥；Windows DPAPI 加密保存密钥。
-- 实际翻译短句的 API 测试按钮。
-- 独立窄字幕带或画面内字幕；长句分页，保留全文；原画面不裁切、不缩放。
-- PPT 中文注释可选且默认关闭：保留英文画面，左侧显示解释性译文。
-- 默认处理全片；可开启双端时间条选择片段。
-- YouTube / X 公开链接下载，可选保存位置、文件夹和视频名称。
-- 每次新导出使用独立目录，编号记录翻译方案、字幕位置和时间；失败任务可续接。
-- MP4 成片，以及英文、中文、双语 SRT 和 ASS。
-- 导入与开始分开；逐个选择片段、字幕来源和处理模式，批量应用设置时保留各自范围。
-- 可选自动精修：默认关闭，API 翻译后校对原译，固定名称与称呼；保留原译、修改对照、独立缓存和额外用量。
-- 更多设置按翻译、识别、导出和方案管理分页，队列操作按用途分组。
-- 日本动漫模式：本地日语识别、日中双语字幕、作品译名表、可选原文校对及 AI 名称候选。
+1. 从 [Releases](https://github.com/Makashibata02/bilingual-video-workshop/releases/latest) 下载 **BilingualVideo-1.9.5-windows-x64-portable.zip**。GitHub 的 Source code 是源码，不是可直接运行的程序。
+2. **完整解压**到可写文件夹，双击 BilingualVideo.exe。无需安装 Python、FFmpeg、Node.js 或模型；不要只复制一个 exe。
+3. 添加本地视频，或粘贴 YouTube / X 的公开视频链接下载。选择模式、翻译方案和字幕位置。
+4. 可选“选择片段”，再点击“开始选中”。每次导出进入独立文件夹，原视频保持不变。
 
-免费网页翻译接口可能变化、限流或要求验证，不保证持续可用。Google 的可用性需现场测试；失败不会自动切换到付费服务。在线翻译前会确认发送文字，API 请求可能计费。
+便携包包含 CPU 识别运行库、Whisper base / small、Argos 英中模型、FFmpeg、Node.js 和 Noto 中日文字体。体积较大是因为这些组件已随包提供。[SHA256 校验值](https://github.com/Makashibata02/bilingual-video-workshop/releases/download/v1.9.5/SHA256SUMS.txt)用于核对下载。
 
-## 从源码运行
+适用于 Windows 10/11 64 位。视频处理需要可用内存和输出空间。程序未购买代码签名证书，系统可能显示来源未知；请核对下载来源与校验值。
 
-目标环境：Windows 10/11 x64、Python 3.12，Python 安装中包含 Tcl/Tk。中文排版需要微软雅黑或黑体。
+## 主要功能
 
-```powershell
+- **英中、日中双语字幕**：优先使用原文 SRT，没有时在本机识别音频。
+- **完整画面与窄字幕带**：中文在上、原文在下，也可选画面内字幕；不裁切、不放大原画面。
+- **按需处理**：逐视频选片段、保存多套 API 方案、批量应用设置，导入与开始分开。
+- **固定译名与上下文**：按作品复用人名和称呼，API 可先理解全部原文，再分批翻译。
+- **可选自动精修**：默认关闭，复用原译，保存修改对照、额外耗时和 API 用量。
+- **下载与导出**：YouTube / X 公开链接、自选保存位置，以及 SRT、ASS、MP4 输出。PPT 中文注释保留为默认关闭的可选功能。
+
+## 选择翻译方式
+
+| 方案 | 费用与网络 | 适用范围 |
+| --- | --- | --- |
+| 必应 | 免费网页接口，需要联网 | 英中、日中；保护已有作品译名，可能限流 |
+| Google | 免费网页接口，需要联网 | 英中、日中；网络与限流可能导致不可用 |
+| Argos | 本地离线，无需密钥 | **仅英中**，作为离线备用 |
+| API | 自备服务与密钥，可能计费 | 英中、日中；全局理解、译名、省用量及精修 |
+
+免费服务失败后**不会自动切换到付费 API**。可分别保存 DS Flash、DS Pro 等方案；实际模型由服务商的模型 ID 决定。开始前会确认联网与费用，API 测试也可能计费。
+
+## 日语视频与自动精修
+
+选择“日本动漫（日→中）”，可指定日文 SRT、使用同名 .ja.srt，或本地日语识别。普通同名 .srt 不会被直接当作日文。可先识别、校对，再继续翻译。[详细流程](docs/ANIME.md)
+
+自动译名是作品内的约定，**不代表官方译名**，人工指定名称优先。未登记名称、代词和识别错误仍可能影响结果。
+
+选择 API 方案后可开启自动精修，它沿用当前模型，对照原文校对已有中文，不重新识别或重译有效缓存。固定名称、说话人标签或备注检查不通过时保留原译，不自动重发请求；时间轴保持不变。
+
+在“更多操作 → 校对与检查 → 查看精修修改”中查看对照和用量。换字幕位置或画质可以复用精修缓存。自动精修仍可能误改，有限对白抽测不等于整集人工校译。
+
+## 简洁界面与本地资料
+
+主界面保留常用操作。其余选项放在“更多设置”的四页：**翻译与精修 / 识别与作品 / 画面与导出 / 方案管理**。操作菜单按队列、校对和导出分组。
+
+便携版的数据保存在自身文件夹：settings 为方案与作品资料，cache 为缓存，exports 为结果，downloads 为下载视频。更新前请保留这些本地资料，不要提交到 GitHub。加密密钥通常无法跨 Windows 账户解密。
+
+默认使用 CPU 识别和 H.264 编码，按本机资源控制线程及优先级。**显示显卡信息不代表启用 GPU 加速**，线程预算也不是固定占用百分比。高保真保留源分辨率和帧率，不能修复原片已有模糊。
+
+## 隐私与限制
+
+- 音视频、识别和成片合成在本机；在线翻译发送字幕及相关语境，启用 PPT 注释时还发送所选说明文字。
+- 密钥通过 Windows DPAPI 加密保存在本机；**加密配置同样不应上传**。
+- 发行包不含作者的视频、真实字幕、配置、密钥、作品资料或处理日志。
+- 下载受网络、登录要求和网站变化影响，不保证所有链接可用，不绕过付费墙或登录限制。
+- 识别、翻译、精修及 OCR 可能有误；首版不含内封字幕提取、声纹识别、配音或歌词特效。
+
+[隐私说明](PRIVACY.md) · [验证范围](docs/VALIDATION.md) · [便携版构建与依赖](docs/PORTABLE.md)
+
+<details>
+<summary><strong>开发者：源码运行、测试与构建</strong></summary>
+
+目标环境为 Python 3.12，需包含 Tcl/Tk。普通使用者下载便携版即可。
+
+~~~powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe scripts/prepare_runtime.py --download
 .\.venv\Scripts\python.exe app/main.py
-```
+~~~
 
-模型准备是显式操作，会下载数百 MB 的模型。来源、固定版本和 SHA-256 在 [scripts/assets.json](scripts/assets.json)。应用运行时不会通过 Hugging Face 自动下载语音模型。
+源码运行资料默认放在 .local/runtime。模型需显式准备，不在处理途中静默下载。动漫推荐 small，可在界面准备，或运行：
 
-YouTube 下载还可能需要受 yt-dlp 支持的 JavaScript 运行时；应用会使用系统 PATH 中的 Node.js，未内置浏览器或 Node.js。不同网站和网络下的可用性需要实际测试。
-
-源码运行的依赖与个人数据放在被 Git 忽略的 `.local/runtime`；可用 `BILINGUAL_APP_ROOT` 指定另一运行目录。打包程序则以自己的程序目录为运行目录。
-
-最小命令行示例（默认不启用 PPT 中文注释）：
-
-```powershell
-.\.venv\Scripts\python.exe app/main.py --process example.mp4 --translator argos --render-mode band --output .local/exports
-```
-
-## 使用说明
-
-1. 添加视频或下载后导入。任务停在“待开始”，此时不会识别、翻译或发送付费请求。
-2. 选中任务，修改上方模式、翻译方案和字幕位置；单选修改自动保存。更多设置分为“翻译与精修 / 识别与作品 / 画面与导出 / 方案管理”。多选任务后可从“更多操作 → 开始与队列”批量应用，各自范围保留。
-3. 如只处理一段，点击“选择片段”，拖动两端或输入时间；默认全片。“更多操作 → 校对与检查 → 原文字幕”可指定外挂 SRT 和编码。
-4. 点击“开始选中”或“更多操作 → 开始与队列 → 开始全部”，通过本地检查及联网 / 费用确认后才排队。取消确认时任务仍等待。
-5. 已排队任务需先“取消排队”才能修改；处理期间新导入的视频不会自动跟随开工。失败或停止后，点击重试返回待开始，再自行开始。
-
-日本动漫模式默认推荐 `small`，可显式准备：
-
-```powershell
+~~~powershell
 .\.venv\Scripts\python.exe scripts/prepare_runtime.py --download --groups asr-small
-```
-
-也可在应用点击“准备识别模型”，已有 `base` 可作为快速选项。详见 [动漫模式与译名表](docs/ANIME.md)。首版支持音频和外挂 SRT，不提取内封字幕或识别画面文字。
-
-1280×720 原画面下，普通独立字幕带为 76 像素；PPT 左侧注释模式下为 80 像素。每种语言一行，长句分页。画面内字幕使用另一套行数预算。低清原片不会因高保真导出恢复缺失细节。
-
-API 方案名可以自定义，例如“快速方案”“高质量方案”；名称本身不决定模型能力，实际调用使用所填模型 ID。保存的密钥通常无法跨 Windows 账户解密。
-
-## 自动精修
-
-选择已保存的 API 方案后可勾选主界面的“自动精修”。它默认关闭，沿用当前模型、密钥和省用量设置，不自动升级模型或为免费翻译调用付费服务。开始前确认包含额外精修费用。精修不重新识别或翻译有效缓存；使用原文、原译、精简全局摘要及前后各两条对白作为参考，按批校对，不合并时间轴。
-
-固定名称和称呼、说话人标签或备注检查不通过时保留原译，失败不自动重发请求。每次导出保留 zh.before-refinement.srt 和 refinement.json；“更多操作 → 校对与检查 → 查看精修修改”显示修改对照、保留原因、额外耗时和 tokens。切换导出画质或字幕位置可复用精修缓存；改原文、原译、作品资料或 API 模型会使精修缓存隔离。自动精修仍可能出错，不代表人工校译通过。
-
-## 开发、测试和构建
-
-```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-test.txt
 .\.venv\Scripts\python.exe scripts/run_tests.py
-.\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
-powershell -File scripts/build.ps1 -Python .\.venv\Scripts\python.exe -IncludeModels
-```
+~~~
 
-构建输出在被忽略的 `dist/BilingualVideo`。构建脚本只复制源码、许可和可选模型，不复制 settings、exports、downloads 或日志；不会打包个人信任证书。二进制包仍需独立做许可、隐私及实际运行验收，不能直接把本机旧安装目录打包分享。
+测试使用合成数据、本地模拟服务和虚构密钥，不调用真实付费服务。公开便携版须在独立、可核验的环境构建，不能压缩个人安装目录。详见 [PORTABLE.md](docs/PORTABLE.md) 和 [RELEASE.md](docs/RELEASE.md)。
 
-测试使用合成字幕、本地 HTTP 模拟服务及虚构密钥，不调用真实付费服务。CI 没有中文字体时，使用替代字体检查几何布局；这不等于验证中文实际渲染。日文导出另外检查真实字体是否覆盖字幕字形。详见 [验证范围](docs/VALIDATION.md)。
+新增公开文件需更新 scripts/public-files.json；发布前重新扫描。整个本地工作目录不是可公开源码包。
 
-## 隐私与发布
+</details>
 
-详见 [PRIVACY.md](PRIVACY.md) 和 [开源准备清单](docs/RELEASE.md)。**加密配置也不应上传**。
+## 开源许可
 
-- `.gitignore` 默认拒绝根目录中未列出的内容，并额外屏蔽配置、证书、视频、模型和运行日志。
-- `scripts/public-files.json` 是待公开文件的精确白名单。
-- 发布脚本只从白名单生成源码 ZIP，同时运行隐私规则和 Gitleaks，再复核 ZIP 内容。
-- 整个本机工作目录不等于可公开源码包。不要把它直接压缩上传。
+应用按 [GNU GPL v3](LICENSE) 分发，翻译适配代码保留 [VideoCaptioner](https://github.com/WEIFENG2333/VideoCaptioner) 的来源与 GPL 许可要求。
 
-```powershell
-.\.venv\Scripts\python.exe scripts/install_gitleaks.py
-.\.venv\Scripts\python.exe scripts/check_public.py --gitleaks
-.\.venv\Scripts\python.exe scripts/export_source.py
-```
+便携包附各依赖、模型和字体的许可。FFmpeg 及 GPL/LGPL 组件的对应源码、补丁和构建材料通过同一 Release 的 third-party-sources 附件提供；其他组件按各自许可分发。详见 [NOTICE.md](NOTICE.md)。
 
-审计结果和源码 ZIP 都保存在 `.local`，不进入源码仓库。创建 Git 仓库后，可启用提交检查：
-
-```powershell
-git config core.hooksPath .githooks
-```
-
-这个本地钩子可被绕过，因此还提供 CI 检查；扫描通过也不是绝对无泄露保证。修改文件后应重新扫描和导出。
-
-## 许可与来源
-
-应用源码按随仓库的 [GNU GPL v3](LICENSE) 分发。Bing / Google 适配代码源于 [VideoCaptioner](https://github.com/WEIFENG2333/VideoCaptioner)，保留来源和 GPL 许可要求。语音、OCR、翻译模型和 FFmpeg 分别有自己的许可，模型和二进制不包含在源码 ZIP 中。详见 [NOTICE.md](NOTICE.md)。
-
-下载和处理视频时，请遵守网站规则和相关内容授权。自动识别、机器翻译和 PPT OCR 可能有错误，重要内容应人工校对。
-
-## 1.7 简洁工作台
-
-添加视频 → 选择模式和翻译方案 → 可选选择片段 → 开始选中。单选设置自动保存；多选通过“更多操作”批量应用，保留各自时间范围。
-
-“更多设置”包含 API 方案管理和测试、识别模型、画质、外挂字幕相关工具、PPT 注释及“仅导出字幕”。完成后可从“更多操作”生成 8 秒样式预览或按当前设置重新导出；翻译结果相同时复用本地缓存。详细记录默认折叠，包含阶段耗时。预览入口暂用于双语字幕；PPT 注释沿用专用校对入口。
-
-## 1.8 译名保护与全局原文理解
-
-日语 API 任务从本次全部原文自动整理人物、别名和完整称呼并固定，不要求用户懂日语。已有人工指定译名优先；自动约定不代表官方译名。同一作品复用固定表，未选作品时按同一视频复用。“更多操作 → 译名检查”查看本次表。API、必应和 Google 都会保护匹配到的名称标记并严格还原；标记丢失停止，未完成批次不保存，也不自动重发。完整称呼最长匹配优先，不对中文译文做普通词全局替换。免费接口复用已有固定表，无表时可保留识别到的人名原文，不暗中调用付费服务。未登记人物、同形普通词、代词与转写错误仍可能影响结果。
-
-1.9.2 补全敬称后接语气词、条件表达等边界；只读上下文使用原文，每个待翻译条目单独列出须保留的标记，避免跨条复制。部分缓存留下不连续条目时，按相邻区间请求，以保留正确的局部上下文。已支持的 DeepSeek 动漫翻译启用 [JSON 输出约束](https://api-docs.deepseek.com/guides/json_mode/)；仍检查编号、数量和标记，格式错误不会自动重复付费，诊断文本只写入本地私有工程。
-
-1.9.3 将自动译名里的“称呼、音译、暂译、候选”等说明移到备注，避免“姐姐（称呼）”直接进入字幕；正常括注别名和人工指定译名不被静默改写。旧缓存只有在原文、模型、上下文完全一致且变化仅为此类自动备注清理时才迁移，字幕修正还须与原文中的名称匹配；不对全部中文台词全局替换，也不为清理备注重新请求 API。记录保存在私有工程 `translation-cache-migration.json`。
-
-高保真模式改用 `libx264 faster / CRF14`，标准小文件与无损模式保持原设置。高保真通过提高码率补偿更快编码的取舍，仍采用相同均衡线程预算、低优先级与原始分辨率／帧率；文件通常增大。具体速度和指标以本地验收为准，并非无损编码保证。质量检查比较原画面区域的 [SSIM 与 PSNR](https://ffmpeg.org/ffmpeg-filters.html#ssim)，PSNR 从全片平均 MSE 计算，排除有意改变的附加字幕带。
-
-API 默认先理解全部原文；选段任务仅分析所选范围。完整分析保存在本地，每批核心摘要最多320字、相关关系与术语最多280字、作品备注最多200字，并保留前后各两条原文。稳定摘要置于请求前部，便于服务前缀缓存。关闭全局理解时，日语模式仍需要名称分析调用。分析和翻译缓存区分思考策略、模型、固定表和提示词版本。
-
-“更多设置”默认启用 DeepSeek 省用量：已支持的 DeepSeek 模型使用低思考分析、无思考翻译，其他兼容模型不发送这些专用参数。可关闭以恢复服务默认设置；不保证两种策略翻译质量相同。参数依据 [DeepSeek 官方思考模式说明](https://api-docs.deepseek.com/guides/thinking_mode/)。实际返回的 token 用量保存在工程 `api-usage.json`，推理 token 已包含在输出用量中。服务未返回用量时无法据此计算费用。
-
-## 自动均衡资源
-
-应用只在本地读取 CPU 型号、物理核与逻辑线程、内存及 DXGI 显卡信息。专用显存和共享内存分别显示；读取失败使用保守回退，不上传硬件信息。“更多设置 → 画面与导出 → 本机配置 / 均衡占用”查看预算。
-
-识别最多4线程，压制按半数物理核、最多12线程，子进程使用较低优先级；保持现有 CPU int8 识别和 H.264 编码画质，不自动切换未验证 GPU 后端。计算前检查可用内存，预留约四分之一总内存（最多8 GiB）；不足时等待最多60秒并支持停止。线程预算和启动检查不等于硬性 CPU 百分比或内存上限，不能保证其他程序增加负载后仍保持该余量。
+请在有权下载和处理视频的前提下使用本工具。

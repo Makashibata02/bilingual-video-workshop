@@ -26,4 +26,6 @@
 | fontTools | 日文字体字形覆盖检查 | https://github.com/fonttools/fonttools ，保留原始许可 |
 | Python / Tcl/Tk、Pillow、OpenCV、ONNX Runtime、Pyclipper、Shapely、Requests 等 | 基础运行环境 | 保留对应版本的原始许可 |
 
-源码 ZIP 不包含模型、FFmpeg、Python 运行库、第三方二进制或网站视频。重新分发可执行程序、模型或相关依赖时，需要另外整理其完整许可、署名、源码义务及适用的分发条件。
+源码 ZIP 不包含模型、FFmpeg、Python 运行库、第三方二进制或网站视频。Windows 便携包另外包含 licenses、THIRD-PARTY-NOTICES.md 和 BUILD-INFO.json；对应原生组件源码、补丁和固定构建材料通过同一 Release 的 third-party-sources 附件提供。具体组件仍按各自许可分发。
+
+便携版额外使用 Node.js LTS（Node.js 项目及其完整第三方声明）和 Noto Sans CJK SC / JP（SIL Open Font License 1.1）。不重新分发 Windows 的微软雅黑、黑体或日文字体。

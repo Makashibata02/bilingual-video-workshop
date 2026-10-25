@@ -121,6 +121,19 @@ class RefinementTests(unittest.TestCase):
                 self.assertEqual(emit.call_args.args[0]['phase'],'refinement');self.assertEqual(call.call_count,1)
         finally:translator.session.close()
 
+    def test_preview_uses_final_subtitles_instead_of_base_translation_cache(self):
+        (self.root/'bin').mkdir();(self.root/'bin/ffmpeg.exe').touch()
+        video=self.root/'sample.mp4';video.touch();video.with_suffix('.srt').write_text(SAMPLE_SRT,encoding='utf-8')
+        runner=FakeEngine(self.root)
+        output=runner.run(video,{'translator':'bing','subtitles_only':True})
+        cues=engine.read_sidecar(output/'en.srt','en')
+        engine.write_srt(output/'zh.srt',cues,['最终精修甲。','最终精修乙。'])
+        def preview_process(command,cwd=None,**kwargs):Path(command[-1]).write_bytes(b'fixture')
+        with patch.object(runner,'_process',side_effect=preview_process):
+            preview=runner.preview(video,output,{'render_mode':'band'})
+        text=(preview/'bilingual.ass').read_text(encoding='utf-8-sig')
+        self.assertIn('最终精修甲',text);self.assertNotIn('第1条中文译文',text)
+
 class RefinementUITests(unittest.TestCase):
     def test_defaults_tabs_switching_confirmation_and_viewport(self):
         from gui import BilingualApp,TRANSLATORS

@@ -1,6 +1,7 @@
 """Download destination flow and thin-footer content/geometry regressions."""
 from pathlib import Path
 import tempfile,json,threading,unittest,sys
+import os,shutil
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'app'))
 import layout,downloads
@@ -40,6 +41,33 @@ class RefinementTests(unittest.TestCase):
             downloads.download_worker({'url':'https://youtu.be/example','folder':str(folder),'filename':'讲座 100%','ffmpeg':str(fake_ff)})
             self.assertEqual(captured['outtmpl'],str(folder/'讲座 100%').replace('%','%%')+'.%(ext)s')
             self.assertEqual(emit.call_args.args[0]['path'],str(folder/'讲座 100%.mp4'))
+
+    def test_portable_download_uses_bundled_node_without_system_install(self):
+        ffmpeg=self.root/'ffmpeg.exe';ffmpeg.touch()
+        node=self.root/'node.exe';node.touch()
+        captured={}
+        class LocalYDL:
+            def __init__(self,options):captured.update(options)
+            def __enter__(self):return self
+            def __exit__(self,*args):pass
+            def extract_info(self,*args,**kwargs):
+                (self_root/'fixture.mp4').write_bytes(b'fixture')
+                return {'title':'fixture','id':'fixture'}
+        self_root=self.root
+        with patch('yt_dlp.YoutubeDL',LocalYDL),patch('engine._worker_emit'),patch('downloads.shutil.which',return_value=None):
+            downloads.download_worker({'url':'https://youtu.be/example','folder':str(self.root),'filename':'fixture','ffmpeg':str(ffmpeg)})
+        self.assertEqual(captured['js_runtimes']['node']['path'],str(node))
+
+    def test_portable_font_fallback_without_system_font_installation(self):
+        fixture=Path(os.environ.get('WINDIR',r'C:\Windows'))/'Fonts/arial.ttf'
+        if not fixture.is_file():self.skipTest('Windows fixture font is unavailable')
+        fonts=self.root/'fonts';fonts.mkdir()
+        for name in ('NotoSansCJKsc-Regular.otf','NotoSansCJKjp-Regular.otf'):shutil.copy2(fixture,fonts/name)
+        with patch.dict(os.environ,{'WINDIR':str(self.root/'no-system-fonts')}),patch('layout.bundled_font_folder',return_value=fonts):
+            self.assertTrue(layout.font_at(18).getlength('fixture')>0)
+            self.assertEqual(Path(layout.japanese_font('fixture')['path']).parent,fonts)
+            header='\n'.join(layout.ass_header(640,418,'Microsoft YaHei'))
+            self.assertIn('Arial',header)
 
     def test_slim_footer_keeps_font_sizes_and_all_long_text(self):
         en='A conditional statement remains valid only if '+('the channel stays constant and the observations remain independent. '*10)

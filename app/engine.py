@@ -622,7 +622,7 @@ class Engine:
         except OSError:
             os.close(descriptor)
             raise RuntimeError("该视频的工程正在使用中，请等待其他任务完成。") from None
-        manifest = {"version": "1.9.4", "source": source, "source_name": video.name,
+        manifest = {"version": "1.9.5", "source": source, "source_name": video.name,
                     "translator": translator, "render_mode": mode, "domain": domain, "ppt_annotations": bool(options.get("ppt_annotations")), "status": "running",
                     'run_settings':run_settings,'model_name':run_settings['model_name'],
                     'profile_code':model_code,'profile_name':str(options.get('profile_name') or translator),
@@ -811,6 +811,7 @@ class Engine:
                 manifest['name_warning_count'] = len(warnings)
                 if warnings:
                     self._emit('translate', 71, f'有 {len(warnings)} 处译名需人工核对，详见译名检查；未自动替换或重发请求。')
+            self._prepare_fonts(job)
             self._emit("subtitles",71,"排版双语字幕…")
             write_srt(job / "zh.srt", cues, translations)
             write_srt(job / "bilingual.srt", [dict(cue, text=translations[i]+"\n"+cue["text"]) for i, cue in enumerate(cues)])
@@ -844,6 +845,7 @@ class Engine:
             self._emit("render", render_start, "生成双语视频（中文在上、原文在下）…")
             temp_video, finished = job / "bilingual.partial.mp4", job / "bilingual.mp4"
             filters = f"pad={canvas_width}:ceil((ih+{band})/2)*2:0:0:black,ass=filename=bilingual.ass"
+            if (job/'fonts').is_dir():filters+=':fontsdir=fonts'
             def render_progress(line):
                 if line.startswith("out_time_us="):
                     try:
@@ -1018,6 +1020,15 @@ class Engine:
         self._emit('understand',44,f'全局理解完成：覆盖 {len(cues)} 条原文，本次分析请求 {requests_made} 次。')
         return context
 
+    def _prepare_fonts(self,folder):
+        for name in ('NotoSansCJKsc-Regular.otf','NotoSansCJKjp-Regular.otf','LICENSE'):
+            source=self.root/'fonts'/name
+            if not source.is_file():continue
+            target=Path(folder)/'fonts'/name;target.parent.mkdir(parents=True,exist_ok=True)
+            if target.exists():continue
+            try:os.link(source,target)
+            except OSError:shutil.copy2(source,target)
+
     def preview(self, video_path, project, options):
         from layout import compact_ass
         from resources import detect_hardware,balanced_plan,memory_status
@@ -1028,13 +1039,20 @@ class Engine:
         language=manifest.get('source_language','en')
         cues=read_sidecar(project/(language+'.srt'),language)
         translations=_read_json(project/'translations.json',{}).get('translations',{})
+        if (project/'zh.srt').is_file():
+            final_cues=read_sidecar(project/'zh.srt','zh')
+            if len(final_cues)!=len(cues) or any(abs(a[k]-b[k])>.02 for a,b in zip(final_cues,cues) for k in ('start','end')):
+                raise ValueError('最终中文字幕与原文时间轴不一致，请先检查字幕文件。')
+            translations={str(i):c['text'] for i,c in enumerate(final_cues)}
         if any(str(i) not in translations for i in range(len(cues))):raise ValueError('请先完成字幕翻译。')
         if options.get('ppt_annotations'):raise ValueError('PPT 注释请通过“校对 PPT 注释”预览；此入口用于双语字幕样式。')
         info=self._probe(video_path);start,end=selected_range(options,info['duration'])
         offset=max(0,min(cues[0]['start'],end-start-1));duration=min(8,end-start-offset)
         folder=project/'previews'/uuid.uuid4().hex[:10];folder.mkdir(parents=True)
+        self._prepare_fonts(folder)
         band=compact_ass(folder/'bilingual.ass',cues,[translations[str(i)] for i in range(len(cues))],info['width'],info['height'],options.get('font','Microsoft YaHei'),options.get('render_mode','band'),source_language=language)
         filters=f"pad=iw:ceil((ih+{band})/2)*2:0:0:black,setpts=PTS-STARTPTS+{offset}/TB,ass=filename=bilingual.ass,setpts=PTS-STARTPTS"
+        if (folder/'fonts').is_dir():filters=filters.replace('ass=filename=bilingual.ass','ass=filename=bilingual.ass:fontsdir=fonts')
         self._process([self.root/'bin/ffmpeg.exe','-hide_banner','-loglevel','error','-nostdin','-ss',str(start+offset),'-i',video_path,'-t',str(duration),'-vf',filters,'-c:v','libx264','-crf',crf,'-preset',preset,'-threads',str(self.resource_plan['encode_threads']),'-c:a','aac','-movflags','+faststart',folder/'preview.mp4'],cwd=folder)
         return folder
 

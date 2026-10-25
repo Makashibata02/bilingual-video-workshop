@@ -55,7 +55,7 @@ class BilingualApp(WorkflowUI, tk.Tk):
     def __init__(self, *, app_root: Path = APP_ROOT) -> None:
         super().__init__()
         self.app_root = Path(app_root)
-        self.title("双语视频工坊 1.9.4")
+        self.title("双语视频工坊 1.9.5")
         self.geometry("1180x760")
         self.minsize(1040, 720)
         self.configure(bg="#f3f6fa")

@@ -58,8 +58,9 @@ def download_worker(payload):
              'quiet':True,'no_warnings':True,'logger':QuietLogger(),'progress_hooks':[progress],
              'socket_timeout':25,'retries':1,'fragment_retries':1,'concurrent_fragment_downloads':2,
              'overwrites':False,'windowsfilenames':True}
-    node=shutil.which('node')
-    # A system JS runtime is optional; no browser or large JS runtime is bundled.
+    bundled_node=ffmpeg.parent/'node.exe'
+    node=str(bundled_node) if bundled_node.is_file() else shutil.which('node')
+    # Portable releases prefer their verified runtime; source users may use PATH.
     if node:options['js_runtimes']={'node':{'path':node}}
     if payload.get('test_seconds'):
         from yt_dlp.utils import download_range_func

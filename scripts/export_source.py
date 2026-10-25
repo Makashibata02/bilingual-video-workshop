@@ -7,12 +7,12 @@ def export():
     result=audit(gitleaks=True)
     if not result['passed']:raise RuntimeError('Source privacy audit failed; see .local/reports.')
     destination=ROOT/'.local/publish';destination.mkdir(parents=True,exist_ok=True)
-    target=destination/'BilingualVideo-1.9.4-source.zip'
+    target=destination/'BilingualVideo-1.9.5-source.zip'
     hashes={}
     with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED) as archive:
         for name in allowed_files():
             data=(ROOT/name).read_bytes();hashes[name]=hashlib.sha256(data).hexdigest()
-            info=zipfile.ZipInfo('BilingualVideo-1.9.4/'+name,date_time=(2026,1,1,0,0,0))
+            info=zipfile.ZipInfo('BilingualVideo-1.9.5/'+name,date_time=(2026,1,1,0,0,0))
             info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o644<<16
             if name.startswith('.githooks/'):info.external_attr=0o755<<16
             archive.writestr(info,data)
