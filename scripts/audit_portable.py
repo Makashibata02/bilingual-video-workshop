@@ -25,6 +25,8 @@ def audit(folder,private_markers=()):
             findings.append({'file':name,'rule':'private_or_debug_artifact'})
         if file.suffix.lower()=='.pem' and name!='_internal/certifi/cacert.pem':
             findings.append({'file':name,'rule':'unexpected_certificate'})
+        if file.name.startswith('opencv_videoio_ffmpeg'):
+            findings.append({'file':name,'rule':'unused_media_backend'})
         # Scan in bounded blocks, including overlapping bytes at boundaries.
         previous=b''
         with file.open('rb') as stream:

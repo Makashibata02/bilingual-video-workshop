@@ -17,7 +17,7 @@ def assemble(build,runtime,materials,ffmpeg,destination):
     destination.mkdir(parents=True)
     for name in ('BilingualVideo.exe','engine-worker.exe'):
         shutil.copy2(build/name,destination/name)
-    shutil.copytree(build/'_internal',destination/'_internal',ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.pyo','*.pdb'))
+    shutil.copytree(build/'_internal',destination/'_internal',ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.pyo','*.pdb','opencv_videoio_ffmpeg*.dll'))
     shutil.copytree(ROOT/'app',destination/'app',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
     shutil.copy2(ROOT/'scripts/assets.json',destination/'app/assets.json')
     for name in ('LICENSE','NOTICE.md','PRIVACY.md','README.md'):

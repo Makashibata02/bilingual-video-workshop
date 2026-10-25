@@ -9,7 +9,7 @@ for package in ['faster_whisper','ctranslate2','sentencepiece','av','onnxruntime
     d,b,h=collect_all(package)
     def runtime_file(item):
         path=Path(item[0])
-        return not {'tests','test','__pycache__'}.intersection(path.parts) and path.suffix.lower() not in ('.pyc','.pyo','.pdb')
+        return not {'tests','test','__pycache__'}.intersection(path.parts) and path.suffix.lower() not in ('.pyc','.pyo','.pdb') and not path.name.startswith('opencv_videoio_ffmpeg')
     datas.extend(item for item in d if runtime_file(item))
     binaries.extend(item for item in b if runtime_file(item))
     hidden.extend(name for name in h if '.tests' not in name and '.test_' not in name)

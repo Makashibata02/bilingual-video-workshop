@@ -11,6 +11,8 @@
 
 不附个人配置、加密密钥、视频、真实字幕、作品资料、导出记录、缓存或调试符号。certifi 的公共 CA 根证书属于已核验的运行依赖，不是作者个人信任证书。便携版使用后产生的 settings、cache、exports 和 downloads 应继续保留在本机。
 
+OpenCV 仅用于 OCR 图像处理，未使用的 opencv_videoio_ffmpeg 插件从发行输入排除；视频解码使用已保留对应源码的媒体组件。
+
 ## 许可材料
 
 Python 包装库的许可不能代表它链接的原生库。PyAV wheel 所附 FFmpeg 包括 x264/x265 等组件，按实际组合保留 GPL/LGPL 材料；不单凭 PyAV 的 BSD 元数据判断整个媒体栈。
